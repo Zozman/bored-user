@@ -12,6 +12,12 @@ The easiest way to use this is to run using [Docker Compose](https://docs.docker
 
 This method will run the app in [the Puppeteer Docker Container](https://pptr.dev/guides/docker) which handles all the browser dependencies for you.  Just set the `URL` Environmental Variable and go!
 
+### Docker
+
+This app can also be run as a normal [Docker](https://www.docker.com/) container:
+
+`docker run -e URL="https://google.com" ghcr.io/zozman/bored-user`
+
 ### NodeJs
 
 The application can also be run as a pure Node app from the `src` directory:
