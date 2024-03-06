@@ -1,0 +1,95 @@
+import { Browser, Page } from "puppeteer";
+import puppeteer from 'puppeteer';
+import cron from 'node-cron';
+import crypto from 'crypto';
+
+// First get values from environmental variables
+const url:string = process.env.URL as string;
+const cronString = process.env.CRON_STRING || '*/5 * * * * *';
+const debug:boolean = process.env.DEBUG ? true : false;
+
+// Make sure a URL is set
+if (!url) {
+    console.error('ERROR: No URL set!  Please set one using the URL Environmental Variable!');
+    process.exit(1);
+} else if (!cron.validate(cronString)) {
+    console.error(`ERROR: CRON_STRING value of ${cronString} is invalid!`);
+    process.exit(1);
+}
+
+let browser: Browser;
+let page: Page;
+let browserInitialized = false;
+
+/**
+ * Function to setup our Browser session
+ */
+async function setupBrowser() {
+    console.log(`Setting up browser to view ${url}...`)
+    // Mark browser as unitialized until we finish setting it up
+    browserInitialized = false;
+
+    try {
+        browser = await puppeteer.launch();
+        page = await browser.newPage();
+
+        await page.goto(url);
+
+        // If for any reason we disconnect then reset the browser session
+        browser.on('disconnected', () => {
+            console.log('Browser Disconnection Detected!');
+            setupBrowser();
+        });
+        // Now mark that it's setup
+        browserInitialized = true;
+
+        console.log('Browser setup complete!');
+    } catch (e) {
+        console.error('Error setting up browser!');
+        console.error(e);
+        console.error('Will try again in 10 seconds');
+        // Try setting up browser again in 10 seconds
+        setTimeout(setupBrowser, 10 * 1000);
+    }
+}
+
+/**
+ * Function to move the mouse randomly
+ */
+async function moveMouse() {
+    if (browserInitialized) {
+        if (debug) {
+            console.log('Starting Mouse Movement...');
+        }
+        const viewport = await page.viewport();
+        const maxX = viewport?.width || 0;
+        const maxY = viewport?.height || 0;
+        if (debug) {
+            console.log(`Current Viewport Dimentions are ${maxX}x${maxY}`);
+        }
+        const moveX = crypto.randomInt(0, maxX);
+        const moveY = crypto.randomInt(0, maxY);
+        console.log(`Moving mouse to (${moveX},${moveY})`);
+        try {
+            // First get the max X and Y coordinate
+            await page.mouse.move(moveX, moveY);
+        } catch (e) {
+            console.error('Error moving mouse');
+            console.error(e);
+        }
+    } else if (debug) {
+        console.warn('Browser not initialized; skipping mouse movement');
+    }
+}
+
+(async () => {
+    // Perform initial setup
+    await setupBrowser();
+
+    if (debug) {
+        console.log(`Setting up cronjob using ${cronString}`);
+    }
+
+    // Setup cron job
+    cron.schedule(cronString, moveMouse);
+})();

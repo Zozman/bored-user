@@ -1,0 +1,8 @@
+version: "3"
+services:
+  app:
+    build: ./src/.
+    environment:
+      URL: https://google.com
+      #CRON_STRING: '*/30 * * * * *'
+      #DEBUG: false

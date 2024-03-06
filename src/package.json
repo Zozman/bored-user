@@ -1,0 +1,22 @@
+{
+  "name": "bored-user",
+  "version": "1.0.0",
+  "description": "Program to simulate a user of a webpage moving their mouse around a website",
+  "main": "index.js",
+  "scripts": {
+    "build": "esbuild index.ts --platform=node --bundle --packages=external --minify --outfile=dist/index.js",
+    "start": "node dist/index.js"
+  },
+  "author": "Zac Lovoy @zwlovoy",
+  "license": "MIT",
+  "dependencies": {
+    "node-cron": "^3.0.3",
+    "puppeteer": "^22.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.24",
+    "@types/node-cron": "^3.0.11",
+    "esbuild": "^0.20.1",
+    "typescript": "^5.3.3"
+  }
+}
