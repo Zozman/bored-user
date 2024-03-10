@@ -37,6 +37,9 @@ This method is not recommended as you are on your own to handle Puppeteer depend
     - REQUIRED
     - String
     - Sets the URL of the page to visit
+- `USER_AGENT`
+    - String
+    - If set, sets a custom [User-Agent](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent) when the page is viewed as opposed to Puppeteer's default one
 - `CRON_STRING`
     - String
     - Default: `*/5 * * * * *` (Every 5 seconds)

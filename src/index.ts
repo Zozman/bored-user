@@ -6,6 +6,7 @@ import crypto from 'crypto';
 // First get values from environmental variables
 const url:string = process.env.URL as string;
 const cronString = process.env.CRON_STRING || '*/5 * * * * *';
+const customUserAgent = process.env.USER_AGENT || null;
 const debug:boolean = process.env.DEBUG ? true : false;
 
 // Make sure a URL is set
@@ -32,6 +33,11 @@ async function setupBrowser() {
     try {
         browser = await puppeteer.launch();
         page = await browser.newPage();
+
+        if (customUserAgent) {
+            console.log(`Using Custom User Agent: ${customUserAgent}`);
+            await page.setUserAgent(customUserAgent);
+        }
 
         await page.goto(url);
 

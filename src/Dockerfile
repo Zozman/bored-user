@@ -1,4 +1,4 @@
-FROM ghcr.io/puppeteer/puppeteer:latest
+FROM ghcr.io/puppeteer/puppeteer:22.4.1
 WORKDIR /usr/src/app
 COPY package.json package.json
 RUN npm i
