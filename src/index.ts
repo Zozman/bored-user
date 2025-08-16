@@ -31,7 +31,11 @@ async function setupBrowser() {
     browserInitialized = false;
 
     try {
-        browser = await puppeteer.launch();
+        browser = await puppeteer.launch({
+            args: [
+                '--no-sandbox',
+            ]
+        });
         page = await browser.newPage();
 
         if (customUserAgent) {
