@@ -1,7 +1,8 @@
-import { Browser, Page } from "puppeteer";
-import puppeteer from 'puppeteer';
-import cron from 'node-cron';
 import crypto from 'crypto';
+import os from 'os';
+
+import puppeteer, { Browser, Page } from "puppeteer";
+import cron from 'node-cron';
 
 // First get values from environmental variables
 const url:string = process.env.URL as string;
@@ -27,7 +28,7 @@ let browserInitialized = false;
  */
 async function setupBrowser() {
     console.log(`Setting up browser to view ${url}...`)
-    // Mark browser as unitialized until we finish setting it up
+    // Mark browser as uninitialized until we finish setting it up
     browserInitialized = false;
 
     try {
@@ -40,7 +41,7 @@ async function setupBrowser() {
 
         if (customUserAgent) {
             console.log(`Using Custom User Agent: ${customUserAgent}`);
-            await page.setUserAgent(customUserAgent);
+            await page.setUserAgent({ userAgent: customUserAgent });
         }
 
         await page.goto(url);
@@ -92,7 +93,29 @@ async function moveMouse() {
     }
 }
 
+/**
+ * Returns the non-internal IP addresses of this container
+ */
+function getInstanceIPs(): string[] {
+    const interfaces = os.networkInterfaces();
+    const addresses: string[] = [];
+    for (const iface of Object.values(interfaces)) {
+        if (!iface) continue;
+        for (const info of iface) {
+            if (!info.internal) {
+                addresses.push(info.address);
+            }
+        }
+    }
+    return addresses;
+}
+
 (async () => {
+    if (debug) {
+        const ips = getInstanceIPs();
+        console.log(`Instance IPs: ${ips.length > 0 ? ips.join(', ') : 'none detected'}`);
+    }
+
     // Perform initial setup
     await setupBrowser();
 
